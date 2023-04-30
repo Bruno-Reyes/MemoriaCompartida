@@ -63,7 +63,8 @@ int main(){
     // Definimos las dimensiones de la matriz
     int filas = 3, columnas = 9;
 
-    // Identificadores de memoria compartida (midMatriz = id memoria matriz & midResultados = id memoria resultados & midProcesos == id procesos terminados)
+    // Identificadores de memoria compartida 
+    // (midMatriz = id memoria matriz & midResultados = id memoria resultados & midProcesos == id procesos terminados)
     int midMatriz, midResultados;
 
     // Definimos el apuntador de la matriz, de los resultados y de los procesos terminados 
@@ -73,19 +74,18 @@ int main(){
     key_t llaveMatriz; 
     key_t llaveResultados; 
 
-    //Identificador del proceso
-    pid_t pid;
-
     // Generamos las llaves para identificar las regiones de la memoria compartida
     llaveMatriz = ftok("Matriz",'k');
     llaveResultados = ftok("Resultados",'k');
 
      // Crea el segmento de memorias compartidas
     midMatriz = shmget(llaveMatriz, sizeof(int)*filas*columnas, IPC_CREAT|0777); 
+    midResultados = shmget(llaveResultados, sizeof(int)*filas, IPC_CREAT|0777);
+
     // Asignando direcciones de inicios de segmentos de las memorias
     matriz = (int *)shmat(midMatriz, NULL, 0);
-    midResultados = shmget(llaveResultados, sizeof(int)*filas, IPC_CREAT|0777);
     listaResultados= (int *)shmat(midResultados,NULL,0);
+
 
     // Asignando valor a los procesos terminados
     procesos=0;
@@ -98,6 +98,7 @@ int main(){
 
     // Iniciamos los valores de los resultados 
     iniciarResultados(listaResultados, filas);
+
 
     int procesosTerminados = 0;
     while(procesos == 0){
